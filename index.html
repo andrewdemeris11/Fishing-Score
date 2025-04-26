@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Galveston Surf Fishing Score 3.5</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      background-color: #e0f7fa;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .header {
+      background-color: #006064;
+      color: white;
+      padding: 20px 10px;
+      position: relative;
+    }
+    .header-title {
+      margin: 0;
+      font-size: 24px;
+    }
+    .dark-mode-toggle {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background-color: white;
+      color: #006064;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dark-mode {
+      background-color: #263238;
+      color: #eceff1;
+    }
+    .dark-mode .header {
+      background-color: #37474f;
+    }
+    .dark-mode .dark-mode-toggle {
+      background-color: #eceff1;
+      color: #37474f;
+    }
+    .form-container {
+      background-color: white;
+      padding: 20px;
+      margin: 20px auto;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      margin: 10px;
+      padding: 10px;
+      width: 90%;
+      max-width: 400px;
+      font-size: 16px;
+    }
+    #output {
+      margin-top: 30px;
+      font-size: 24px;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .links {
+      margin-top: 10px;
+    }
+    .links a {
+      display: inline-block;
+      margin: 5px;
+      padding: 10px 15px;
+      background-color: #00796b;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .links a:hover {
+      background-color: #004d40;
+    }
+    /* Responsive Adjustments for Mobile */
+    @media (max-width: 600px) {
+      .dark-mode-toggle {
+        top: 10px;
+        right: 10px;
+        width: 25px;
+        height: 25px;
+        font-size: 14px;
+      }
+      .header-title {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1 class="header-title">Galveston Surf Fishing Score 3.5</h1>
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+</div>
+
+<div class="links">
+  <a href="https://tides4fishing.com/us/texas/jamaica-beach-west-bay" target="_blank">Check Local Conditions</a>
+  <a href="https://www.galvestonfishingpier.com/" target="_blank">Check Surf Cam</a>
+</div>
+
+<div class="form-container">
+  <form id="fishingForm">
+    <input type="number" id="windSpeed" placeholder="Wind Speed (mph)" required><br>
+    <select id="windDirection">
+      <option value="SE">SE</option>
+      <option value="NE">NE</option>
+      <option value="E">E</option>
+      <option value="N">N</option>
+      <option value="SW">SW</option>
+      <option value="W">W</option>
+      <option value="NW">NW</option>
+    </select><br>
+    <input type="number" id="swellHeight" step="0.1" placeholder="Swell Height (ft)" required><br>
+    <input type="number" id="period" step="0.1" placeholder="Period (seconds)" required><br>
+    <input type="number" id="tidalCoefficient" placeholder="Tidal Coefficient (out of 120)" required><br>
+    <select id="moonPhase">
+      <option value="New Moon">New Moon</option>
+      <option value="Full Moon">Full Moon</option>
+      <option value="First Quarter">First Quarter</option>
+      <option value="Last Quarter">Last Quarter</option>
+      <option value="Waxing Crescent">Waxing Crescent</option>
+      <option value="Waning Crescent">Waning Crescent</option>
+    </select><br>
+    <input type="number" id="fishActivity" min="0" max="3" placeholder="Fish Activity (0-3)" required><br>
+    <input type="number" id="waterTemp" step="0.1" placeholder="Water Temp (°F)" required><br>
+    <select id="waterClarity">
+      <option value="Clear">Clear</option>
+      <option value="Stained">Stained</option>
+      <option value="Muddy">Muddy</option>
+      <option value="NA">N/A</option>
+    </select><br><br>
+    <button type="button" onclick="calculateScore()">Calculate Score</button>
+  </form>
+  <h2 id="output"></h2>
+</div>
+
+<script>
+// Local Storage Load
+window.onload = function() {
+  const fields = ["windSpeed", "windDirection", "swellHeight", "period", "tidalCoefficient", "moonPhase", "fishActivity", "waterTemp", "waterClarity"];
+  fields.forEach(id => {
+    if(localStorage.getItem(id)) document.getElementById(id).value = localStorage.getItem(id);
+  });
+};
+
+// Local Storage Save
+function saveInputs() {
+  const fields = ["windSpeed", "windDirection", "swellHeight", "period", "tidalCoefficient", "moonPhase", "fishActivity", "waterTemp", "waterClarity"];
+  fields.forEach(id => {
+    localStorage.setItem(id, document.getElementById(id).value);
+  });
+}
+
+// Dark Mode Toggle
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+}
+
+// Calculate Score
+function calculateScore() {
+  saveInputs();
+  const output = document.getElementById('output');
+  output.style.opacity = 0;
+  
+  setTimeout(() => {
+    let windSpeed = parseFloat(document.getElementById('windSpeed').value);
+    let windDirection = document.getElementById('windDirection').value;
+    let swellHeight = parseFloat(document.getElementById('swellHeight').value);
+    let period = parseFloat(document.getElementById('period').value);
+    let tidalCoefficient = parseFloat(document.getElementById('tidalCoefficient').value);
+    let moonPhase = document.getElementById('moonPhase').value;
+    let fishActivity = parseFloat(document.getElementById('fishActivity').value);
+    let waterTemp = parseFloat(document.getElementById('waterTemp').value);
+    let waterClarity = document.getElementById('waterClarity').value;
+
+    if (swellHeight > 5 || windSpeed > 20) {
+      output.innerHTML = "Don't Waste Your Time Fishing.";
+      output.style.color = "red";
+      output.style.opacity = 1;
+      return;
+    }
+
+    let score = 0;
+    // (Insert your scoring logic here)
+
+    output.innerHTML = "Fishing Efficiency Score: " + score.toFixed(1) + "/100 – (Result)";
+    output.style.color = (score >= 70) ? "green" : (score >= 55 ? "orange" : "red");
+    output.style.opacity = 1;
+  }, 500);
+}
+</script>
+
+</body>
+</html>
